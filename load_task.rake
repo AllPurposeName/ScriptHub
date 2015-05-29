@@ -127,19 +127,19 @@ class Raker
   end
 
   def url(event_id=1)
-    OpenStruct.new(root: "https://rehubstub.herokuapp.com",
-                   events_index: "https://rehubstub.herokuapp.com/events",
-                   event_page: "https://rehubstub.herokuapp.com/events/#{event_id}",
-    tickets_index: "https://rehubstub.herokuapp.com/tickets",
-      log_out: "https://rehubstub.herokuapp.com/logout",
-      log_in: "https://rehubstub.herokuapp.com/login")
+    OpenStruct.new(root: "http://localhost:3000",
+                   events_index: "http://localhost:3000/events",
+                   event_page: "http://localhost:3000/events/#{event_id}",
+    tickets_index: "http://localhost:3000/tickets",
+      log_out: "http://localhost:3000/logout",
+      log_in: "http://localhost:3000/login")
   end
 
   def admin_url
-    OpenStruct.new(root: "https://rehubstub.herokuapp.com/admin",
-                   events: "https://rehubstub.herokuapp.com/admin/events",
-                   venues: "https://rehubstub.herokuapp.com/admin/venues",
-                   categories: "https://rehubstub.herokuapp.com/admin/categories",
-                   users: "https://rehubstub.herokuapp.com/admin/users")
+    OpenStruct.new(root: "http://localhost:3000/admin",
+                   events: "http://localhost:3000/admin/events",
+                   venues: "http://localhost:3000/admin/venues",
+                   categories: "http://localhost:3000/admin/categories",
+                   users: "http://localhost:3000/admin/users")
   end
 end
