@@ -5,7 +5,9 @@ require 'launchy'
 
 desc "simulate load against HubStub app"
 task :load_test do
-  3.times.map { |i| Thread.new {Raker.new(i).new_users}; Thread.new {Raker.new(i).new_users} }.map(&:join)
+  4.times.map { |i| Thread.new {Raker.new(i).new_users}; Thread.new {Raker.new(i).admin_surfing};
+    Thread.new {Raker.new(i).user_adventures}; Thread.new {Raker.new(i).add_random_ticket};
+    Thread.new {Raker.new(i).user_adventures}; Thread.new {Raker.new(i).add_random_ticket} }.map(&:join)
 end
 
 class Raker
@@ -49,6 +51,20 @@ class Raker
     end
   end
 
+  def add_random_tickets
+    puts "starting adding random tickets"
+    loop do
+      number_of_tickets = rand(1..3)
+      number_of_tickets.times do
+        session.visit(url(rand(1..15)).event_page)
+        add_ticket_to_cart
+      end
+      puts "#{number_of_tickets} ticket(s) added to unassigned cart, iteration: #{iteration}"
+    end
+  end
+
+  private
+
   def new_user
     name = "#{Faker::Name.name} #{Faker::Name.suffix}"
     email = Faker::Internet.email
@@ -65,17 +81,6 @@ class Raker
     session.click_link_or_button("Adventure")
   end
 
-  def add_random_tickets
-    puts "starting adding random tickets"
-    loop do
-      number_of_tickets = rand(1..3)
-      number_of_tickets.times do
-        session.visit(url(rand(1..15)).event_page)
-        add_ticket_to_cart
-      end
-      puts "#{number_of_tickets} ticket(s) added to unassigned cart, iteration: #{iteration}"
-    end
-  end
 
   def add_ticket_to_cart
     if session.has_css?("td.vert-align")
@@ -86,7 +91,6 @@ class Raker
     end
   end
 
-  private
 
   def click_cart
     session.within("table.event-tickets") do
@@ -126,20 +130,24 @@ class Raker
     session.click_link_or_button("Log in")
   end
 
+  def domain
+    "http://localhost:3000"
+  end
+
   def url(event_id=1)
-    OpenStruct.new(root: "http://localhost:3000",
-                   events_index: "http://localhost:3000/events",
-                   event_page: "http://localhost:3000/events/#{event_id}",
-    tickets_index: "http://localhost:3000/tickets",
-      log_out: "http://localhost:3000/logout",
-      log_in: "http://localhost:3000/login")
+    OpenStruct.new(root: "#{domain}",
+                   events_index: "#{domain}/events",
+                   event_page: "#{domain}/events/#{event_id}",
+                   tickets_index: "#{domain}/tickets",
+                   log_out: "#{domain}/logout",
+                   log_in: "#{domain}/login")
   end
 
   def admin_url
-    OpenStruct.new(root: "http://localhost:3000/admin",
-                   events: "http://localhost:3000/admin/events",
-                   venues: "http://localhost:3000/admin/venues",
-                   categories: "http://localhost:3000/admin/categories",
-                   users: "http://localhost:3000/admin/users")
+    OpenStruct.new(root: "#{domain}/admin",
+                   events: "#{domain}/admin/events",
+                   venues: "#{domain}/admin/venues",
+                   categories: "#{domain}/admin/categories",
+                   users: "#{domain}/admin/users")
   end
 end
